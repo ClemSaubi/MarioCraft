@@ -1,4 +1,4 @@
-PT4-StarCraft
+PT4-MarioCraft
 =============
 
 <p>Nous avons le projet de faire un jeu de strat&eacute;gie du type StarCraft</p>
@@ -13,16 +13,16 @@ PT4-StarCraft
     <li>Des b&acirc;timents</li></ul>
   
   <h3>Ressources :</h3>
-    <ul><li>Bois (Permet de construire les b&acirc;timents et de cr&eacute;er les combattants)</li>
-    <li>Nourritures (Permet de cr&eacute;er les personnages)</li></ul>
+    <ul><li>Bois : Arbres(Permet de construire les b&acirc;timents et de cr&eacute;er les combattants)</li>
+    <li>Nourritures : Champignons(Permet de cr&eacute;er les personnages)</li></ul>
   
   <h3>Obstacles :</h3>
     <ul><li>Indestructibles</li>
     <li>Plac&eacute;s sur toute la map</li></ul>
   
   <h3>Personnages :</h3>
-    <ul><li>Artisans (Permet de r&eacute;colter les moultes ressources disponibles)</li>
-    <li>Combattants (Permet d'attaquer les ennemis, points de vie accrus)</li></ul>
+    <ul><li>Artisans : Toad(Permet de r&eacute;colter les moultes ressources disponibles)</li>
+    <li>Combattants : Mario(Permet d'attaquer les ennemis, points de vie accrus)</li></ul>
   
   <h3>Personnages controlés :</h3>
     <ul><li>R&eacute;colter des ressources et les ramener au foyer pour les stocker (si artisans)</li>
