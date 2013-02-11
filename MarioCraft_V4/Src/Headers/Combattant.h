@@ -3,8 +3,7 @@
 
 #include "Personnage.h"
 #include "Constantes.h"
-#include <iostream>	
-
+#include <iostream>
 
 class Combattant : public Personnage {
 

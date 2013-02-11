@@ -61,6 +61,9 @@ void GameModel::construireElement(int pos_x, int pos_y, string type) {
         _elements.push_back(new Nourriture (pos_x, pos_y));
         _compteur_nourriture--;
     }
+
+    else if (type == "Artisan")
+        _elements.push_back(new Artisan(pos_x, pos_y - DIMENSION_PERSO));
 }
 
 int GameModel::getListElementSize()const {
@@ -95,8 +98,6 @@ bool GameModel::listeVide()const {
 void GameModel::elementsDesactives() {
     for (unsigned int i = 0; i < _elements.size(); ++i)
         _elements[i]->setActif(false);
-
-    cout << "Tous les elements sont inactifs" << endl;
 }
 
 string GameModel::intToString(int a)const {
@@ -127,4 +128,45 @@ int GameModel::getCompteurBois()const {
 
 int GameModel::getCompteurNourriture()const {
     return _compteur_nourriture;
+}
+
+Element * GameModel::searchFoyer()const{
+    for (unsigned int i = 0; i < _elements.size(); ++i)
+    {
+        if (_elements[i]->getType() == "Foyer")
+            return _elements[i];
+    }
+    
+    return NULL;
+}
+
+Element * GameModel::searchElementActif()const {
+
+    for (unsigned int i = 0; i < _elements.size(); ++i)
+    {
+        if (_elements[i]->estActif() == true)
+        {
+            return _elements[i];
+        }
+    }
+    return NULL;
+}
+
+void GameModel::activerToutesUnites(string type){
+    for (unsigned int i = 0; i < _elements.size(); ++i)
+    {
+        if (_elements[i]->getType() == type)
+            _elements[i]->setActif(true);
+    }
+}
+
+vector<Element*> GameModel::unitesActives(string type)const{
+
+    vector<Element*> unites;
+    for (unsigned int i = 0; i < _elements.size(); ++i)
+    {
+        if (_elements[i]->getType() == type and _elements[i]->estActif() == true    )
+            unites.push_back(_elements[i]);
+    }
+    return unites;
 }

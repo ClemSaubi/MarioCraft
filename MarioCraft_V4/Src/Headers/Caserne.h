@@ -10,18 +10,10 @@
 
 class Caserne : public Batiment{
 
- private:
- 	std::vector<Combattant*> _combattants;
-
  public:
 
   Caserne(int pos_x, int pos_y);
   ~Caserne();
-  
-  void creerCombattant(int pos_x, int pos_y);
-  void eliminerCombattant(int i);
-  void eraseVector();
-
 
 };
 

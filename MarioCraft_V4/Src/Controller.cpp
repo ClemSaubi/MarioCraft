@@ -65,18 +65,68 @@ bool Controller::treatEvents() {
                 {
                     Element * e = _model->searchElement(mouse_x, mouse_y);
 
-                    if (e != NULL and sourisSurElement(input, e) == true 
-                        and (e->getType() != "Bois" and e->getType() != "Nourriture" and e->getType() != "Obstacle"))
+                    if (e != NULL)
                     {
-                        _model->elementsDesactives();
-                        e->setActif(true);
-                        cout << "Nouvel Element active : " + e->getType() << endl;
+                        if (sourisSurElement(input, e) == true 
+                            and (e->getType() != "Bois" and e->getType() != "Nourriture" and e->getType() != "Obstacle"))
+                        {
+                            _model->elementsDesactives();
+                            e->setActif(true);
+                        }
                     }
                     else
                         _model->elementsDesactives();
                 }
-                else
-                    cout << "Aucun Element construit ! " << endl;
+            }
+
+            //Construction d'unites
+            if (_event.Type == Event::MouseButtonReleased and button == Mouse::Right)
+            {
+                Element * f = _model->searchFoyer();
+                Element * e = _model->searchElementActif();
+                vector<Element*> artisans = _model->unitesActives("Artisan");
+
+                if (f != NULL)
+                {
+                    if (f->estActif() == true and sourisSurElement(input, f) == true)
+                        _model->construireElement(f->getPosX(), f->getPosY(), "Artisan");
+                }
+
+                //Deplacement d'une unite
+                if (e != NULL)
+                {
+                    if (e->estActif() == true)
+                    {
+                        if (e->getType() == "Artisan" or e->getType() == "Combattant")
+                        {
+                            e->setPosX(mouse_x);
+                            e->setPosY(mouse_y);
+                        }
+                    }
+                }
+                if (artisans.empty() == false)
+                {
+                    for (unsigned int i = 0; i < artisans.size(); ++i)
+                    {
+                        if (i%2 == 0)
+                        {
+                            artisans[i]->setPosX(mouse_x + i*DIMENSION_PERSO);
+                            artisans[i]->setPosY(mouse_y);
+                        }
+                        else
+                        {
+                            artisans[i]->setPosX(mouse_x);
+                            artisans[i]->setPosY(mouse_y + i*DIMENSION_PERSO);
+                        }
+                    }
+                }
+            }
+
+            //Activer tous les Artisans
+            if (input.IsKeyDown(Key::A))
+            {
+                _model->elementsDesactives();
+                _model->activerToutesUnites("Artisan");
             }
 
             //Construction d'un Batiment apres appui sur F
@@ -90,30 +140,32 @@ bool Controller::treatEvents() {
                     Element * e = _model->searchElement(mouse_x, mouse_y);
 
                     if (e != NULL and sourisSurElement(input, e) == true)
-                        cout << "Element trop proche !" << endl;
+                        cout << "..." << endl;
 
                     else
                         _model->construireElement(mouse_x-(DIMENSION_SPRITE/2), mouse_y-(DIMENSION_SPRITE/2), "Caserne");
                 }
             }
 
+            //Creation du bois sur la map
             if (input.IsKeyDown(Key::B))
             {
                 Element * e = _model->searchElement(mouse_x, mouse_y);
 
                 if (e != NULL and sourisSurElement(input, e) == true)
-                    cout << "Element trop proche !" << endl;
+                    cout << "..." << endl;
 
                 else if (_model->getCompteurBois() != 0)
                     _model->construireElement(mouse_x-(DIMENSION_SPRITE/2), mouse_y-(DIMENSION_SPRITE/2), "Bois");
             }
 
+            //Creation de la nourriture sur la map
             if (input.IsKeyDown(Key::N))
             {
                 Element * e = _model->searchElement(mouse_x, mouse_y);
 
                 if (e != NULL and sourisSurElement(input, e) == true)
-                    cout << "Element trop proche !" << endl;
+                    cout << "..." << endl;
 
                 else if (_model->getCompteurNourriture() != 0)
                     _model->construireElement(mouse_x-(DIMENSION_SPRITE/2), mouse_y-(DIMENSION_SPRITE/2), "Nourriture");

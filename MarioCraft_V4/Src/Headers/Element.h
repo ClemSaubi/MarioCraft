@@ -27,7 +27,6 @@ class Element{
   void perteVie(int degats);
   bool estActif()const;
   void setActif(bool actif);
-
 };
 
 #endif

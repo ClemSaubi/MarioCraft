@@ -21,12 +21,14 @@ private:
 
     sf::Sprite _map_sprite;
     sf::Sprite _combattant_sprite;
+    sf::Sprite _artisan_sprite;
     sf::Sprite _foyer_sprite;
     sf::Sprite _caserne_sprite;
     sf::Sprite _bois_sprite;
     sf::Sprite _nourriture_sprite;
 
     sf::Image _map;
+    sf::Image _artisan;
     sf::Image _combattant;
     sf::Image _foyer;
     sf::Image _caserne;

@@ -16,7 +16,8 @@ GameView::GameView(int w, int h, GameModel * model): _w(w), _h(h)
             or  !_foyer.LoadFromFile("../Pictures/foyer.png")
             or  !_caserne.LoadFromFile("../Pictures/caserne.jpg")
             or  !_bois.LoadFromFile("../Pictures/bois.png")
-            or  !_nourriture.LoadFromFile("../Pictures/nourriture.png"))
+            or  !_nourriture.LoadFromFile("../Pictures/nourriture.png")
+            or  !_artisan.LoadFromFile("../Pictures/artisan.png"))
     {
         cout << "Erreur durant le chargement des images" << endl;
         exit(1);
@@ -29,6 +30,11 @@ GameView::GameView(int w, int h, GameModel * model): _w(w), _h(h)
         _map_sprite.SetPosition(0,0);
 
         _combattant_sprite = Sprite (_combattant);
+
+        _artisan_sprite = Sprite(_artisan);
+        _artisan_sprite.SetSubRect(IntRect(0,19, 13, 19*2));
+        _artisan_sprite.Resize(DIMENSION_PERSO, DIMENSION_PERSO);
+        _artisan.CreateMaskFromColor(Color(0,255,0));
 
         _foyer_sprite = Sprite (_foyer);
         _foyer_sprite.Resize(DIMENSION_SPRITE, DIMENSION_SPRITE);
@@ -115,6 +121,11 @@ void GameView::Display()
         {
             _nourriture_sprite.SetPosition(_model->getElement(i)->getPosX(), _model->getElement(i)->getPosY());
             _window->Draw(_nourriture_sprite);
+        }
+        if (type == "Artisan")
+        {
+            _artisan_sprite.SetPosition(_model->getElement(i)->getPosX(), _model->getElement(i)->getPosY());
+            _window->Draw(_artisan_sprite);
         }
     }
 
