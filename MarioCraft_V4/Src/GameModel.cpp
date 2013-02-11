@@ -9,6 +9,7 @@ GameModel::GameModel() {
     _quantite_bois = 50;
     _compteur_bois = 3;
     _compteur_nourriture = 3;
+    _compteur_artisans = 0;
 }
 
 GameModel::~GameModel() {
@@ -63,7 +64,10 @@ void GameModel::construireElement(int pos_x, int pos_y, string type) {
     }
 
     else if (type == "Artisan")
+    {
         _elements.push_back(new Artisan(pos_x, pos_y - DIMENSION_PERSO));
+        _compteur_artisans++;
+	}
 }
 
 int GameModel::getListElementSize()const {
@@ -112,6 +116,14 @@ int GameModel::getQuantiteNourriture()const {
 
 void GameModel::setQuantiteNourriture(int a) {
     _quantite_nourriture = a;
+}
+
+int GameModel::getCompteurArtisans()const {
+    return _compteur_artisans;
+}
+
+void GameModel::setCompteurArtisans(int a) {
+    _compteur_artisans = a;
 }
 
 int GameModel::getQuantiteBois()const {

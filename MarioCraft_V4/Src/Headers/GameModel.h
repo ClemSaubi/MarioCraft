@@ -26,6 +26,7 @@ class GameModel {
   int _quantite_bois;
   int _compteur_bois;
   int _compteur_nourriture;
+  int _compteur_artisans;
 
  public:
 
@@ -60,6 +61,8 @@ class GameModel {
   void setQuantiteBois(int a);
   int getCompteurBois()const;
   int getCompteurNourriture()const;
+  int getCompteurArtisans()const;
+  void setCompteurArtisans(int a);
 
   //Utilitaires
   std::string intToString(int a)const;

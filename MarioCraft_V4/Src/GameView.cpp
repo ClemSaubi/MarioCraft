@@ -11,7 +11,7 @@ GameView::GameView(int w, int h, GameModel * model): _w(w), _h(h)
     _model = model;
     _window = new RenderWindow(VideoMode::GetMode(0), "MarioCraft", Style::Close);
 
-    if     (!_map.LoadFromFile("../Pictures/map.jpg")
+    if     (!_map.LoadFromFile("../Pictures/map.png")
             or  !_combattant.LoadFromFile("../Pictures/mario4.png")
             or  !_foyer.LoadFromFile("../Pictures/foyer.png")
             or  !_caserne.LoadFromFile("../Pictures/caserne.jpg")
@@ -73,18 +73,25 @@ void GameView::Display()
 
     int nourriture = _model->getQuantiteNourriture();
     int bois = _model->getQuantiteBois();
+    int artisans = _model->getCompteurArtisans(); 
 
     String _indic_nourriture = String(_model->intToString(nourriture));
     _indic_nourriture.SetFont(*_font);
     _indic_nourriture.SetColor(Color::White);
     _indic_nourriture.SetSize(SIZE_TEXT);
-    _indic_nourriture.SetPosition(_window->GetWidth()/3, 20);
+    _indic_nourriture.SetPosition(_window->GetWidth()/2, 20);
+    
+    String _indic_artisans = String(_model->intToString(artisans));
+    _indic_artisans.SetFont(*_font);
+    _indic_artisans.SetColor(Color::White);
+    _indic_artisans.SetSize(SIZE_TEXT);
+    _indic_artisans.SetPosition(_window->GetWidth()/4, 20);
 
     String _indic_bois = String(_model->intToString(bois));
     _indic_bois.SetFont(*_font);
     _indic_bois.SetColor(Color::White);
     _indic_bois.SetSize(SIZE_TEXT);
-    _indic_bois.SetPosition((_window->GetWidth()*2)/3, 20);
+    _indic_bois.SetPosition((_window->GetWidth()*3)/4, 20);
 
     _window->Draw(_map_sprite);
 
@@ -132,15 +139,20 @@ void GameView::Display()
     _window->Draw(Shape::Rectangle(0, 0, _window->GetWidth(), 50, Color::Black));
 
     _nourriture_sprite.Resize(40,40);
-    _nourriture_sprite.SetPosition(_window->GetWidth()/3 - 60, 7);
+    _nourriture_sprite.SetPosition(_window->GetWidth()/2 - 60, 7);
 
     _bois_sprite.Resize(40,40);
-    _bois_sprite.SetPosition((_window->GetWidth()*2)/3 - 60,7);
+    _bois_sprite.SetPosition((_window->GetWidth()*3)/4 - 60,7);
+
+    _artisan_sprite.Resize(40,40);
+    _artisan_sprite.SetPosition((_window->GetWidth())/4 - 60,7);
 
     _window->Draw(_nourriture_sprite);
     _window->Draw(_bois_sprite);
+    _window->Draw(_artisan_sprite);
     _window->Draw(_indic_nourriture);
     _window->Draw(_indic_bois);
+    _window->Draw(_indic_artisans);
 
     _window->Display();
     usleep(2000);
