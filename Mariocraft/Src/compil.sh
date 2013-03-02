@@ -1,1 +1,1 @@
-make clean ; clear ; make ; ./MarioCraft
+make clean && clear && make && ./MarioCraft
