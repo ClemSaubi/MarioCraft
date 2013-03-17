@@ -28,36 +28,38 @@ class Joueur {
   int _total_bois;
   int _total_artisans;
   int _total_combattants;
-  int id_unites;
-  bool _joueur_actif;
+  int id_art;
+  int id_comb;
+  bool _controlable;
 
  public:
 
-  Joueur();
+  Joueur(bool controlable, int bois, int nourriture);
   ~Joueur();
 
   void nextStep();
-  bool JoueurActif()const;
-  void desactiverJoueur(bool a);
+  Joueur * getJoueur()const;
+  std::vector<Joueur*> getIAs()const;
 
   //Batiment
   bool foyerConstruit()const;
   void eraseJoueur();
   Batiment * searchFoyer()const;
   void construireBatiment(int pos_x, int pos_y, std::string type);
-  int getListBatimentSize()const;
+  std::vector<Batiment*> listeBatiments()const;
   Batiment * getBatiment(int i)const;
   void detruireBatiment(int i);
+  void detruirePersonnage(int i);
   bool listeBatimentVide()const;
 
   //Unites
   void construireUnite(int pos_x, int pos_y, std::string type);
-  int getListPersonnageSize()const;
   Personnage * getPersonnage(int i)const;
   void eliminerPersonnage(int i);
   bool listePersonnageVide()const;
   void retourFoyer(Artisan * art);
   void activerArtisans();
+  void activerCombattants();
 
   //Recherches dans les vecteurs
   Element * searchElement(int pos_x, int pos_y)const;
@@ -81,6 +83,8 @@ class Joueur {
 
   int getTotalCombattants()const;
   void setTotalCombattants(int a);
+
+  bool estControlable()const;
 };
 
 #endif

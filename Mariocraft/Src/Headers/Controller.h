@@ -31,6 +31,7 @@ public:
     void constructionFoyer(int x, int y, Composant * c);
     void constructionCaserne(int x, int y, Element * e, Composant * c);
     void definirTarget(int x, int y);
+    void ordonnerPatrouille();
 };
 
 #endif

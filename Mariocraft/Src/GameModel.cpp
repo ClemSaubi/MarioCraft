@@ -4,10 +4,14 @@ using namespace std;
 
 GameModel::GameModel() {
     cout << "GameModel::Constructeur" << endl;
-    _joueurs.push_back(new Joueur());
-    _compteur_bois = 8;
-    _compteur_nourriture = 8;
-    _state = GAME;
+    _nombre_IA = 0;
+    _joueurs.push_back(new Joueur(true, 700, 700));    
+    _compteur_bois = 12;
+    _compteur_nourriture = 12;
+    _state = MENU;
+    _temps = 0.f;
+    _level = "Facile";
+    _timer_IA.Reset();
 }
 
 GameModel::~GameModel() {
@@ -15,55 +19,162 @@ GameModel::~GameModel() {
     cout << "GameModel::Destructeur" << endl;
 }
 
+void GameModel::setNbIA(int nb){
+    _nombre_IA = nb;
+}
+
+int GameModel::getNbIA()const{
+    return _nombre_IA;
+}
+
+void GameModel::creerIA(int bois, int nourriture){
+    for (int i = 0; i < _nombre_IA; ++i)
+        _joueurs.push_back(new Joueur(false, bois, nourriture));
+}
+
+string GameModel::getLevel()const{
+    return _level;
+}
+
+void GameModel::setTemps(float temps){
+    _temps = temps;
+}
+
+void GameModel::setLevel(string level){
+    _level = level;
+}
+
 void GameModel::nextStep() {
+    
     for (unsigned int i = 0; i < _joueurs.size(); ++i)
         _joueurs[i]->nextStep();
 
     for (unsigned int i = 0; i < _composants.size(); ++i)
     {
         detruireComposant(i);
-        
-        searchCollision(_composants[i]);
+        //searchCollision(_composants[i]);
+    }
+
+    //Gestion IA
+    vector<Joueur*> ia = getIAs();
+
+    for (unsigned int i = 0; i < ia.size(); ++i)
+    {
+        //Tache IA
+        attribuerTacheIA(ia[i]);
+
+        if (_timer_IA.GetElapsedTime() > _temps)
+        {
+            if (ia[i]->foyerConstruit() == false)
+            {
+                ia[i]->construireBatiment(rand()%5000, rand()%3000, "Foyer");
+                _timer_IA.Reset();
+            }
+            else
+            {
+                switch(rand()%3)
+                {
+                    case 0:ia[i]->construireBatiment(rand()%5000 + 50, rand()%3000 + 50, "Caserne");break;
+                    case 1:
+                    {
+                        Batiment * foyer = ia[i]->searchFoyer();
+                        ia[i]->construireUnite(foyer->getPosX(), foyer->getPosY(), "Artisan");
+                    }
+                    break;
+                    case 2:construireCombattantIA(ia[i]);break;
+                    default:break;
+                }
+                _timer_IA.Reset();
+            }
+        }
     }
 }
 
+void GameModel::construireCombattantIA(Joueur * ia){
+    
+    Batiment * caserne = NULL;
+
+    int taille = ia->listeBatiments().size();
+
+    if (taille > 0)
+    {
+        caserne = ia->getBatiment(rand()%taille);
+        if (dynamic_cast<Caserne*>(caserne) != NULL)
+            ia->construireUnite(caserne->getPosX(), caserne->getPosY(), "Combattant");    
+    }
+}
+
+void GameModel::attribuerTacheIA(Joueur * ia)
+{
+    Composant * c = NULL;
+            
+    if (_composants.size() > 0)
+        c = _composants[rand()%_composants.size()];
+    
+
+    Personnage * p = NULL;
+    int taille = ia->listePersonnages().size();
+    if (taille > 0)
+        p = ia->getPersonnage(rand()%taille);
+
+    if (p != NULL)
+    {
+        Artisan * art = dynamic_cast<Artisan*>(p);
+        Combattant * com = dynamic_cast<Combattant*>(p);
+        if (art != NULL)
+        {
+            if (c != NULL and art->getTarget() == NULL)
+                art->setTarget(c);
+        }
+        else if (com != NULL)
+        {
+            if (com->getTypeTache() == "")
+            {
+                com->setTypeTache("Patrouille");
+                com->setDestX(500);
+                com->setDestY(500);
+            }
+        }
+    }    
+}
+
 void GameModel::eraseMap() {
+
     for (unsigned int i = 0; i < _joueurs.size(); ++i)
         delete _joueurs[i];
 
     for (unsigned int i = 0; i < _composants.size(); ++i)
         delete _composants[i];
 
-    _joueurs.clear();
     _composants.clear();
+    _joueurs.clear();
 }
 
-Joueur * GameModel::getJoueurActif()const {
-    unsigned int i = 0;
-    bool trouve = false;
+Joueur * GameModel::getJoueur()const {
+    return _joueurs[0];
+}
 
-    while(i < _joueurs.size() and trouve == false)
+vector<Joueur*> GameModel::getIAs()const{
+    vector<Joueur*> ia;
+
+    for (unsigned int i = 0; i < _joueurs.size(); ++i)
     {
-        if (_joueurs[i]->JoueurActif() == true)
-            trouve = true;
-        else
-            i++;
+        if (_joueurs[i]->estControlable() == false)
+            ia.push_back(_joueurs[i]);
     }
-    if (trouve == true)
-        return _joueurs[i];
-    else
-        return NULL;
+
+    return ia;
 }
 
 void GameModel::creationMap(){
   while(_compteur_bois > 0)
   {
-    _composants.push_back(new Bois(rand()%5000 - 50, rand()%2700 - 50));
+    _composants.push_back(new Bois(rand()%5000 - 50, rand()%3000 - 50));
     _compteur_bois--;
   }
   while(_compteur_nourriture > 0)
   {
-    _composants.push_back(new Nourriture(rand()%5000 - 50, rand()%2700 - 50));
+    _composants.push_back(new Nourriture(rand()%5000 - 50, rand()%3000 - 50));
     _compteur_nourriture--;
   }
 }
@@ -77,8 +188,8 @@ Composant * GameModel::getComposant(int i)const {
     return _composants[i];
 }
 
-int GameModel::getListComposantSize()const {
-    return _composants.size();
+vector<Composant*> GameModel::listeComposants()const{
+    return _composants;
 }
 
 void GameModel::deciblerComposant() {
@@ -166,24 +277,20 @@ void GameModel::setState(AppState s){
 }
 
 bool GameModel::searchCollision(Composant * c)const{
-
-    for (unsigned int i = 0; i < _joueurs.size(); ++i)
+    for (unsigned int j = 0; j < getJoueur()->listePersonnages().size(); ++j)
     {
-        for (unsigned int j = 0; j < _joueurs[i]->listePersonnages().size(); ++j)
+        if (position(c,j) == true)
         {
-            if (position(c,j) == true)
-            {
-                if (collision(c,j) == true){
-                    _joueurs[i]->getPersonnage(j)->setDestX(_joueurs[i]->getPersonnage(j)->getPosX());
-                    _joueurs[i]->getPersonnage(j)->setDestY(_joueurs[i]->getPersonnage(j)->getPosY());
-                    _joueurs[i]->getPersonnage(j)->rentreEnCollision(true);
+            if (collision(c,j) == true){
+                getJoueur()->getPersonnage(j)->setDestX(getJoueur()->getPersonnage(j)->getPosX());
+                getJoueur()->getPersonnage(j)->setDestY(getJoueur()->getPersonnage(j)->getPosY());
+                getJoueur()->getPersonnage(j)->rentreEnCollision(true);
 
-                    Artisan * art = dynamic_cast<Artisan*>(_joueurs[i]->getPersonnage(j));
-                    if (art != NULL)
-                        art->setTarget(NULL);
+                Artisan * art = dynamic_cast<Artisan*>(getJoueur()->getPersonnage(j));
+                if (art != NULL)
+                    art->setTarget(NULL);
 
-                    return true;
-                }
+                return true;
             }
         }
     }
@@ -191,15 +298,15 @@ bool GameModel::searchCollision(Composant * c)const{
 }
 
 bool GameModel::collision(Composant * c, int i)const{
-    return (( getJoueurActif()->getPersonnage(i)->getPosX() <= c->getPosX() + DIMENSION_SPRITE*2/3 
-        and   this->getJoueurActif()->getPersonnage(i)->getPosX() >= c->getPosX())
-        or  ( getJoueurActif()->getPersonnage(i)->getPosX() + DIMENSION_SPRITE*2/3 <= c->getPosX() + DIMENSION_SPRITE*2/3
-        and   this->getJoueurActif()->getPersonnage(i)->getPosX() + DIMENSION_SPRITE*2/3 >= c->getPosX()));
+    return (( getJoueur()->getPersonnage(i)->getPosX() <= c->getPosX() + DIMENSION_SPRITE*2/3 
+        and   this->getJoueur()->getPersonnage(i)->getPosX() >= c->getPosX())
+        or  ( getJoueur()->getPersonnage(i)->getPosX() + DIMENSION_SPRITE*2/3 <= c->getPosX() + DIMENSION_SPRITE*2/3
+        and   this->getJoueur()->getPersonnage(i)->getPosX() + DIMENSION_SPRITE*2/3 >= c->getPosX()));
 }
 
 bool GameModel::position(Composant * c, int i)const{
-    return (getJoueurActif()->getPersonnage(i)->getPosY() <= c->getPosY() + DIMENSION_SPRITE*2/3
-        and this->getJoueurActif()->getPersonnage(i)->getPosY() >= c->getPosY())
-        or (this->getJoueurActif()->getPersonnage(i)->getPosY() + DIMENSION_SPRITE*2/3 >= c->getPosY()
-        and this->getJoueurActif()->getPersonnage(i)->getPosY() + DIMENSION_SPRITE*2/3 <= c->getPosY() + DIMENSION_SPRITE*2/3);
+    return (getJoueur()->getPersonnage(i)->getPosY() <= c->getPosY() + DIMENSION_SPRITE*2/3
+        and this->getJoueur()->getPersonnage(i)->getPosY() >= c->getPosY())
+        or (this->getJoueur()->getPersonnage(i)->getPosY() + DIMENSION_SPRITE*2/3 >= c->getPosY()
+        and this->getJoueur()->getPersonnage(i)->getPosY() + DIMENSION_SPRITE*2/3 <= c->getPosY() + DIMENSION_SPRITE*2/3);
 }

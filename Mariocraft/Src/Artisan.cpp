@@ -44,7 +44,6 @@ void Artisan::setBois(int a){
 void Artisan::effectuerTache(){
     if (_target != NULL and _target->getVieComposant() > 0)
     {
-
         int x, y;
 
         //Si artisan est en haut de target
@@ -53,19 +52,16 @@ void Artisan::effectuerTache(){
             // Si artisan est a droite de target
             if (_pos_x >= (_target->getPosX() + DIMENSION_SPRITE))
             {
-                cout << "HAUT-DROITE" << endl;
                 x = _target->getPosX();
                 y = _target->getPosY() - DIMENSION_SPRITE + 3;
             }
             else if (_pos_x <= _target->getPosX() + 5)
             {
-                cout << "HAUT-GAUCHE" << endl;
                 x = _target->getPosX();
                 y = _target->getPosY() - DIMENSION_SPRITE + 3;
             }
             else
             {
-                cout << "HAUT" << endl;
                 x = _target->getPosX();
                 y = _target->getPosY() - DIMENSION_SPRITE + 3;
             }
@@ -76,19 +72,16 @@ void Artisan::effectuerTache(){
             // Si artisan est a droite de target
             if (_pos_x >= (_target->getPosX() + DIMENSION_SPRITE))
             {
-                cout << "BAS-DROITE" << endl;
                 x = _target->getPosX();
                 y = _target->getPosY() + DIMENSION_SPRITE + 3;
             }
             else if (_pos_x <= _target->getPosX() + 5)
             {
-                cout << "BAS-GAUCHE" << endl;
                 x = _target->getPosX();
                 y = _target->getPosY() + DIMENSION_SPRITE + 3;
             }
             else
             {
-                cout << "BAS" << endl;
                 x = _target->getPosX();
                 y = _target->getPosY() + DIMENSION_SPRITE + 3;
             }
@@ -104,7 +97,7 @@ void Artisan::effectuerTache(){
             {
                 if (_target->getTypeComposant() == "Nourriture")
                 {
-                    if (_timer_recolte.GetElapsedTime() > 2)
+                    if (_timer_recolte.GetElapsedTime() > 1.f)
                     {
                         _recolte_nourriture_artisan++;
                         _target->perteVie(1);
@@ -113,7 +106,7 @@ void Artisan::effectuerTache(){
                 }
                 else
                 {
-                    if (_timer_recolte.GetElapsedTime() > 2)
+                    if (_timer_recolte.GetElapsedTime() > 1.f)
                     {
                         _recolte_bois_artisan++;
                         _target->perteVie(1);

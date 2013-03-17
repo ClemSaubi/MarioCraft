@@ -5,6 +5,8 @@
 const int WINDOW_WIDTH = 1000;
 const int WINDOW_HEIGHT = 700;
 const int SIZE_TEXT = 20;
+const int LARGEUR_BOUTON = 300;
+const int HAUTEUR_BOUTON = 80;
 
 //Batiment
 const int DIMENSION_SPRITE = 100;

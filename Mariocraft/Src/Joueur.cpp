@@ -2,15 +2,16 @@
 
 using namespace std;
 
-Joueur::Joueur() {
+Joueur::Joueur(bool controlable, int bois, int nourriture) {
     cout << "Joueur::Constructeur" << endl;
     _foyerConstruit = false;
-    _total_nourriture = 100;
-    _total_bois = 100;
+    _total_nourriture = nourriture;
+    _total_bois = bois;
     _total_artisans = 0;
     _total_combattants = 0;
-    id_unites = 0;
-    _joueur_actif = true;
+    id_art = 0;
+    id_comb = 0;
+    _controlable = controlable;
 }
 
 Joueur::~Joueur() {
@@ -18,17 +19,11 @@ Joueur::~Joueur() {
     cout << "Joueur::Destructeur" << endl;
 }
 
-bool Joueur::JoueurActif()const{
-    return _joueur_actif;
-}
-
-void Joueur::desactiverJoueur(bool a){
-    _joueur_actif = a;
-}
-
 void Joueur::nextStep() {
+
     for (unsigned int i = 0; i < _personnages.size(); ++i)
     {
+        detruirePersonnage(i);
         if (_personnages[i]->getPosX() < _personnages[i]->getDestX())
             _personnages[i]->setPosX(_personnages[i]->getPosX() + 6);
 
@@ -42,6 +37,7 @@ void Joueur::nextStep() {
             _personnages[i]->setPosY(_personnages[i]->getPosY() - 6);
         
         Artisan * art = dynamic_cast<Artisan*>(_personnages[i]);
+        Combattant * com = dynamic_cast<Combattant*>(_personnages[i]);
 
         if (art != NULL)
         {
@@ -53,7 +49,12 @@ void Joueur::nextStep() {
                     retourFoyer(art);
             }
         }
+        if (com != NULL)
+            com->effectuerTache();
     }
+
+    for (unsigned int i = 0; i < _batiments.size(); ++i)
+        detruireBatiment(i);
 }
 
 bool Joueur::foyerConstruit()const {
@@ -101,6 +102,10 @@ void Joueur::construireBatiment(int pos_x, int pos_y, string type) {
     }
 }
 
+vector<Batiment*> Joueur::listeBatiments()const{
+    return _batiments;
+}
+
 vector<Personnage*> Joueur::listePersonnages()const{
     return _personnages;
 }
@@ -111,12 +116,22 @@ void Joueur::construireUnite(int pos_x, int pos_y, string type) {
         if (_total_nourriture >= 15)
         {
             _total_artisans++;
-            id_unites++;
+            id_art++;
             _total_nourriture -= 15;
-            _personnages.push_back(new Artisan(pos_x + (id_unites-1)*DIMENSION_SPRITE
-                                               , pos_y + DIMENSION_SPRITE));
-            if (id_unites == 4)
-                id_unites = 0;
+            
+            switch(id_art)
+            {
+                case 1:_personnages.push_back(new Artisan(pos_x - DIMENSION_SPRITE, pos_y + DIMENSION_SPRITE));break;
+                case 2:_personnages.push_back(new Artisan(pos_x, pos_y + DIMENSION_SPRITE));break;
+                case 3:_personnages.push_back(new Artisan(pos_x + DIMENSION_SPRITE, pos_y + DIMENSION_SPRITE));break;
+                case 4:_personnages.push_back(new Artisan(pos_x - DIMENSION_SPRITE, pos_y - 2*DIMENSION_SPRITE));break;
+                case 5:_personnages.push_back(new Artisan(pos_x, pos_y - 2*DIMENSION_SPRITE));break;
+                case 6:
+                {
+                    _personnages.push_back(new Artisan(pos_x + DIMENSION_SPRITE, pos_y - 2*DIMENSION_SPRITE));
+                    id_art = 0;
+                } break;
+            }
         }
         else
             cout << "Pas assez de ressources" << endl;
@@ -126,13 +141,23 @@ void Joueur::construireUnite(int pos_x, int pos_y, string type) {
         if (_total_nourriture >= 15 and _total_bois >= 10)
         {
             _total_combattants++;
-            id_unites++;
             _total_nourriture -= 15;
+            id_comb++;
             _total_bois-= 10;
-            _personnages.push_back(new Combattant(pos_x + (id_unites-1)*DIMENSION_SPRITE
-                                               , pos_y + DIMENSION_SPRITE));
-            if (id_unites == 4)
-                id_unites = 0;
+            
+            switch(id_comb)
+            {
+                case 1:_personnages.push_back(new Combattant(pos_x - DIMENSION_SPRITE, pos_y + DIMENSION_SPRITE));break;
+                case 2:_personnages.push_back(new Combattant(pos_x, pos_y + DIMENSION_SPRITE));break;
+                case 3:_personnages.push_back(new Combattant(pos_x + DIMENSION_SPRITE, pos_y + DIMENSION_SPRITE));break;
+                case 4:_personnages.push_back(new Combattant(pos_x - DIMENSION_SPRITE, pos_y - 2*DIMENSION_SPRITE));break;
+                case 5:_personnages.push_back(new Combattant(pos_x, pos_y - 2*DIMENSION_SPRITE));break;
+                case 6:
+                {
+                    _personnages.push_back(new Combattant(pos_x + DIMENSION_SPRITE, pos_y - 2*DIMENSION_SPRITE));
+                    id_comb = 0;
+                } break;
+            }
         }
         else
             cout << "Pas assez de ressources" << endl;
@@ -141,10 +166,18 @@ void Joueur::construireUnite(int pos_x, int pos_y, string type) {
 
 void Joueur::detruireBatiment(int i) {
 
-    if (_batiments[i]->getTypeElement() == "Foyer")
-        _foyerConstruit=false;
+    if (_batiments[i]->getVieElement() <= 0)
+    {
+        if (_batiments[i]->getTypeElement() == "Foyer")
+            _foyerConstruit=false;
 
-    _batiments.erase(_batiments.begin()+i);
+        _batiments.erase(_batiments.begin()+i);
+    }
+}
+
+void Joueur::detruirePersonnage(int i){
+    if (_personnages[i]->getVieElement() <= 0)
+        _personnages.erase(_personnages.begin()+i);
 }
 
 void Joueur::retourFoyer(Artisan * art){
@@ -196,7 +229,18 @@ vector<Combattant*> Joueur::combattantsActifs()const{
 
 void Joueur::activerArtisans(){
     for (unsigned int i = 0; i < _personnages.size(); ++i)
-        _personnages[i]->setActif(true);
+    {
+        if (dynamic_cast<Artisan*>(_personnages[i]))
+            _personnages[i]->setActif(true);
+    }
+}
+
+void Joueur::activerCombattants(){
+    for (unsigned int i = 0; i < _personnages.size(); ++i)
+    {
+        if (dynamic_cast<Combattant*>(_personnages[i]))
+            _personnages[i]->setActif(true);
+    }
 }
 
 void Joueur::eliminerPersonnage(int i) {
@@ -206,14 +250,6 @@ void Joueur::eliminerPersonnage(int i) {
         _total_combattants--;
 
     _personnages.erase(_personnages.begin()+i);
-}
-
-int Joueur::getListPersonnageSize()const {
-    return _personnages.size();
-}
-
-int Joueur::getListBatimentSize()const {
-    return _batiments.size();
 }
 
 Batiment * Joueur::getBatiment(int i)const {
@@ -352,6 +388,10 @@ int Joueur::getTotalBois()const {
 
 void Joueur::setTotalBois(int a) {
     _total_bois = a;
+}
+
+bool Joueur::estControlable()const{
+    return _controlable;
 }
 
 Batiment * Joueur::searchFoyer()const {

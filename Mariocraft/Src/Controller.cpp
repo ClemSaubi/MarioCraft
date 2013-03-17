@@ -95,18 +95,18 @@ bool Controller::treatEvents() {
             //Entrees claviers
             if (_event.Type == Event::KeyReleased)
             {
-                Element * e = _model->getJoueurActif()->searchElement(MousePos.x, MousePos.y);
+                Element * e = _model->getJoueur()->searchElement(MousePos.x, MousePos.y);
                 Composant * c = _model->searchComposant(MousePos.x, MousePos.y);
 
                 switch (_event.Key.Code)
                 {
                     //Creation Map
-                case Key::A:
+                case Key::M:
                     _model->creationMap();
                     break;
 
                     //Construction Foyer
-                case Key::F :
+                case Key::F:
                     constructionFoyer(MousePos.x, MousePos.y, c);
                     break;
 
@@ -115,18 +115,34 @@ bool Controller::treatEvents() {
                     constructionCaserne(MousePos.x, MousePos.y, e, c);
                     break;
 
-                case Key::D:
-                    _model->getJoueurActif()->activerArtisans();
-                    break;
-
-                    //Fermer l'application
-                case Key::Escape :
+                    //Activer tous les Artisans
+                case Key::A:
                 {
-                    _view->getWindow()->Close();
-                    result = false;
-                };
+                    _model->getJoueur()->elementsDesactives();
+                    _model->getJoueur()->activerArtisans();
+                }
                 break;
 
+                    //Activer tous les Combattants
+                case Key::U:
+                {
+                    _model->getJoueur()->elementsDesactives();
+                    _model->getJoueur()->activerCombattants();
+                }
+                break;
+
+                    //Faire patrouiller un Combattant
+                case Key::P:
+                    ordonnerPatrouille();
+                    break;
+
+                case Key::Escape :
+                {
+                    result = false;
+                    _view->getWindow()->Close();                    
+                }
+                break;
+                
                 default:
                     break;
                 }
@@ -137,10 +153,10 @@ bool Controller::treatEvents() {
 }
 
 void Controller::activationElement(int x, int y) {
-    if (_model->getJoueurActif()->listeBatimentVide() == false or
-        _model->getJoueurActif()->listePersonnageVide() == false)
+    if (_model->getJoueur()->listeBatimentVide() == false or
+        _model->getJoueur()->listePersonnageVide() == false)
     {
-        Element * e = _model->getJoueurActif()->searchElement(x,y);
+        Element * e = _model->getJoueur()->searchElement(x,y);
 
         if (e != NULL)
         {
@@ -149,7 +165,7 @@ void Controller::activationElement(int x, int y) {
                 //Activation d'un élément apres clic gauche dessus
                 if (e->estActif() == false)
                 {
-                    _model->getJoueurActif()->elementsDesactives();
+                    _model->getJoueur()->elementsDesactives();
                     e->setActif(true);
 
                     Artisan * art = dynamic_cast<Artisan*>(e);
@@ -158,6 +174,8 @@ void Controller::activationElement(int x, int y) {
                         _model->deciblerComposant();
                         art->getTarget()->setCible(true);
                     }
+                    else
+                        _model->deciblerComposant();
                 }
                 else
                     e->setActif(false);
@@ -165,31 +183,42 @@ void Controller::activationElement(int x, int y) {
         }
         else
         {
-            _model->getJoueurActif()->elementsDesactives();
+            _model->getJoueur()->elementsDesactives();
             _model->deciblerComposant();
         }
     }
 }
 
+void Controller::ordonnerPatrouille(){
+    vector<Combattant*> combs = _model->getJoueur()->combattantsActifs();
+
+    for (unsigned int i = 0; i < combs.size(); ++i)
+    {
+        combs[i]->setTypeTache("Patrouille");
+        combs[i]->setDestX(500);
+        combs[i]->setDestY(500);
+    }
+}
+
 void Controller::gestionUnites(int x, int y) {
-    Batiment * foyer = _model->getJoueurActif()->searchFoyer();
+    Batiment * foyer = _model->getJoueur()->searchFoyer();
 
     if (foyer != NULL)
     {
         if (foyer->estActif() == true and this->sourisSurElement(x, y, foyer) == true)
-            _model->getJoueurActif()->construireUnite(foyer->getPosX(), foyer->getPosY() + DIMENSION_PERSO, "Artisan");
+            _model->getJoueur()->construireUnite(foyer->getPosX(), foyer->getPosY() + DIMENSION_PERSO, "Artisan");
     }
 
-    Batiment * caserne = _model->getJoueurActif()->caserneActive();
+    Batiment * caserne = _model->getJoueur()->caserneActive();
 
     if (caserne != NULL)
     {
-        if (caserne->estActif() == true and this->sourisSurElement(x, y, caserne) == true)
-            _model->getJoueurActif()->construireUnite(caserne->getPosX(), caserne->getPosY() + DIMENSION_PERSO, "Combattant");
+        if (this->sourisSurElement(x, y, caserne) == true)
+            _model->getJoueur()->construireUnite(caserne->getPosX(), caserne->getPosY() + DIMENSION_PERSO, "Combattant");
     }
 
     //Deplacement d'Artisans
-    vector<Artisan*> arts = _model->getJoueurActif()->artisansActifs();
+    vector<Artisan*> arts = _model->getJoueur()->artisansActifs();
 
     for (unsigned int i = 0; i < arts.size(); ++i)
     {
@@ -200,28 +229,29 @@ void Controller::gestionUnites(int x, int y) {
     }
 
     //Deplacement de Combattants
-    vector<Combattant*> combs = _model->getJoueurActif()->combattantsActifs();
+    vector<Combattant*> combs = _model->getJoueur()->combattantsActifs();
 
     for (unsigned int i = 0; i < combs.size(); ++i)
     {
         combs[i]->setDestX(x - DIMENSION_PERSO/2 + (i*DIMENSION_PERSO*3)/2);
         combs[i]->setDestY(y - DIMENSION_PERSO/2);
-        combs[i]->setTargetPerso(NULL);                
+        combs[i]->setTargetPerso(NULL);
+        combs[i]->rentreEnCollision(false);         
     }
 }
 
 void Controller::constructionFoyer(int x, int y, Composant * c) {
-    if (_model->getJoueurActif()->foyerConstruit() == false)
+    if (_model->getJoueur()->foyerConstruit() == false)
     {
         if (c != NULL)
         {
             if (this->sourisSurComposant(x, y, c) == false)
-                _model->getJoueurActif()->construireBatiment(x-(DIMENSION_SPRITE/2), y-(DIMENSION_SPRITE/2), "Foyer");
+                _model->getJoueur()->construireBatiment(x-(DIMENSION_SPRITE/2), y-(DIMENSION_SPRITE/2), "Foyer");
             else
                 cout << "Element trop proche !" << endl;
         }
         else
-            _model->getJoueurActif()->construireBatiment(x-(DIMENSION_SPRITE/2), y-(DIMENSION_SPRITE/2), "Foyer");
+            _model->getJoueur()->construireBatiment(x-(DIMENSION_SPRITE/2), y-(DIMENSION_SPRITE/2), "Foyer");
     }
     else
         cout << "Foyer deja bati" << endl;
@@ -231,17 +261,18 @@ void Controller::constructionCaserne(int x, int y, Element * e, Composant * c) {
     if (e != NULL and c != NULL)
     {
         if (this->sourisSurElement(x, y, e) == false and this->sourisSurComposant(x, y, c) == false)
-            _model->getJoueurActif()->construireBatiment(x-(DIMENSION_SPRITE/2), y-(DIMENSION_SPRITE/2), "Caserne");
+            _model->getJoueur()->construireBatiment(x-(DIMENSION_SPRITE/2), y-(DIMENSION_SPRITE/2), "Caserne");
 
         else
             cout << "Element trop proche !" << endl;
     }
     else
-        _model->getJoueurActif()->construireBatiment(x-(DIMENSION_SPRITE/2), y-(DIMENSION_SPRITE/2), "Caserne");
+        _model->getJoueur()->construireBatiment(x-(DIMENSION_SPRITE/2), y-(DIMENSION_SPRITE/2), "Caserne");
 }
 
 void Controller::definirTarget(int x, int y){
-    vector<Artisan*> arts = _model->getJoueurActif()->artisansActifs();
+    vector<Artisan*> arts = _model->getJoueur()->artisansActifs();
+    vector<Combattant*> combs = _model->getJoueur()->combattantsActifs();
 
     for (unsigned int i = 0; i < arts.size(); ++i)
     {
@@ -258,4 +289,17 @@ void Controller::definirTarget(int x, int y){
         else
             _model->deciblerComposant();
     }
+    // for (unsigned int i = 0; i < combs.size(); ++i)
+    // {
+    //     Element * e = _model->getJoueur()->searchElement(x,y);
+    //     cout << "caca" << endl;
+    //     if (e != NULL)
+    //     {
+    //         if (sourisSurElement(x,y,e) == true)
+    //         {
+    //             combs[i]->setTargetPerso(e);
+    //             combs[i]->setTypeTache("Attaque");
+    //         }
+    //     }
+    // }
 }

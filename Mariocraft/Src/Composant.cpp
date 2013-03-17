@@ -8,6 +8,7 @@ Composant::Composant(int pos_x, int pos_y)
     _est_cible = false;
     _pos_x = pos_x;
     _pos_y = pos_y;
+    _pts_vie = 1000;
 }
 
 Composant::~Composant() {

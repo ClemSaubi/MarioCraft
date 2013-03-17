@@ -7,7 +7,6 @@ Bois::Bois( int pos_x, int pos_y) :
 {
     cout << "Bois::Constructeur" << endl;
     _type_composant = "Bois";
-    _pts_vie = 100;
 }
 
 Bois::~Bois()

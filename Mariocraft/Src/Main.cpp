@@ -17,7 +17,9 @@ int main() {
 
     while(_control->treatEvents())
     {
-        _model->nextStep();
+        if (_model->getState() == GAME)
+            _model->nextStep();
+    
         _view->Display();
     }
 
