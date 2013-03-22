@@ -1,0 +1,33 @@
+Voici un petit menu d'aide qui repertorie les différentes commandes permettant de jouer a Mariocraft :
+
+	- "Echap" 	= Fermer l'application
+	- "M" 		= Installer les ressources sur la carte
+	- "F"			= Creation de votre "Foyer" a la position de la souris
+	- "C"		= Creation d'une "Caserne" a la position de la souris 
+	- "A"		= Activation de tous vos "Artisans"
+	- "U"		= Activation de tous vos "Combattants"
+	- "Z"			= Deplacement de la vue vers le haut
+	- "Q"		= Deplacement de la vue vers la gauche
+	- "D"		= Deplacement de la vue vers la droite
+	- "S"			= Deplacement de la vue vers le bas
+	- "Roulette souris avant" = Zoom avant 
+	- "Roulette souris arriere" = Zoom arriere
+
+Pour un "Combattant" actif :
+	
+	- "P"			= Ordre de patrouiller autour du "Foyer"
+
+Pour un "Artisan" actif :
+	
+	- "Clic droit sur ressource"	= Planification de la recolte entre le "Foyer" et la ressource cible
+
+Pour des unites actives : 
+
+	- "Clic droit"	= Deplacement des unites a l'endroit du clic
+
+Pour un "Batiment" actif : 
+
+	-"Clic droit sur lui-meme" = Creation d'une unite correspondante au type de "Batiment"
+							("Foyer" = "Artisan" , "Caserne" = "Combattant")
+
+Bon jeu !! :)
