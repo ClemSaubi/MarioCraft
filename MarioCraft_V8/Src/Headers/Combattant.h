@@ -6,6 +6,7 @@
 #include "Batiment.h"
 #include <iostream>
 #include <string>
+#include <SFML/System.hpp>
 
 class Combattant : public Personnage {
 
@@ -13,8 +14,9 @@ class Combattant : public Personnage {
 
  	int _degats;
  	std::string _type_tache;
- 	Batiment * _target_perso;
+ 	Element * _target_perso;
  	Batiment * _foy;
+ 	sf::Clock temps;
 
  public:
 
@@ -22,8 +24,8 @@ class Combattant : public Personnage {
   ~Combattant();
   void attaquer();
   Batiment * getFoyer()const;
-  Batiment * getTargetPerso()const;
-  void setTargetPerso(Batiment * target);
+  Element * getTargetPerso()const;
+  void setTargetPerso(Element * target);
   std::string getTypeTache()const;
   void setTypeTache(std::string type_tache);
   virtual void effectuerTache();

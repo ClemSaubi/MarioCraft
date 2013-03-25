@@ -297,17 +297,23 @@ void Controller::definirTarget(int x, int y){
         else
             _model->deciblerComposant();
     }
+    vector<Joueur*> ia = _model->getIAs();
+
     for (unsigned int i = 0; i < combs.size(); ++i)
     {
-        Element * e = _model->getJoueur()->searchElement(x,y);
-        if (dynamic_cast<Batiment*>(e) != NULL)
+        for (unsigned int j = 0; j < ia.size(); ++j)
         {
-            cout << "oojyhgs" << endl;
-            if (sourisSurElement(x,y,e) == true)
+            Element * e = ia[j]->searchElement(x,y);
+            if (e != NULL)
             {
-                combs[i]->setTargetPerso(dynamic_cast<Batiment*>(e));
-                combs[i]->setTypeTache("Attaque");
+                if (sourisSurElement(x,y,e) == true)
+                {
+                    combs[i]->setTargetPerso(e);
+                    combs[i]->setTypeTache("Attaque");
+                }
             }
+            else
+                combs[i]->setTargetPerso(NULL);
         }
     }
 }

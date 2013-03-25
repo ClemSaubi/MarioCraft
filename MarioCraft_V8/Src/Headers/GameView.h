@@ -15,7 +15,6 @@ class GameView
 {
 private:
     int _w, _h;
-    pthread_t _thread_Step;
 
     GameModel * _model;
 
@@ -42,6 +41,8 @@ private:
     sf::Sprite _levelD_sprite;
     sf::Sprite _oui_sprite;
     sf::Sprite _non_sprite;
+    sf::Sprite _ouiC_sprite;
+    sf::Sprite _nonC_sprite;
     sf::Sprite _play_sprite;
     sf::Sprite _help_sprite;
     
@@ -72,6 +73,10 @@ private:
     sf::Image _oui_hov;
     sf::Image _non;
     sf::Image _non_hov;
+    sf::Image _ouiC;
+    sf::Image _ouiC_hov;
+    sf::Image _nonC;
+    sf::Image _nonC_hov;
     sf::Image _play;
     sf::Image _play_hov;
     sf::Image _help;

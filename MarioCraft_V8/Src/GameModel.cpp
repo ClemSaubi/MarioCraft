@@ -5,18 +5,36 @@ using namespace std;
 GameModel::GameModel() {
     cout << "GameModel::Constructeur" << endl;
     _nombre_IA = 0;
-    _joueurs.push_back(new Joueur(true, 70, 70));    
+    _joueurs.push_back(new Joueur(true, 700, 700));    
     _compteur_bois = 30;
     _compteur_nourriture = 25;
     _state = MENU;
     _temps = 0.f;
     _level = "Facile";
+    _collision = false;
     _timer_IA.Reset();
 }
 
 GameModel::~GameModel() {
     eraseMap();
     cout << "GameModel::Destructeur" << endl;
+}
+
+bool GameModel::collision()const
+{
+    return _collision;
+}
+
+string GameModel::etatCollision()const{
+    if (_collision == true)
+        return "Oui";
+    else
+        return "Non";
+}
+
+void GameModel::activerCollision(bool a)
+{
+    _collision = a;
 }
 
 void GameModel::setNbIA(int nb){
@@ -45,14 +63,16 @@ void GameModel::setLevel(string level){
 }
 
 void GameModel::nextStep(int width, int height) {
-    
+
     for (unsigned int i = 0; i < _joueurs.size(); ++i)
         _joueurs[i]->nextStep();
 
     for (unsigned int i = 0; i < _composants.size(); ++i)
     {
         detruireComposant(i);
-        // searchCollision(_composants[i]);
+
+        if (_collision == true)
+            searchCollision(_composants[i]);
     }
 
     //Gestion IA
@@ -140,6 +160,19 @@ string GameModel::commandes()const
 
     return content;
 }
+
+vector<Element*> GameModel::vecteurElementJoueur()const{
+    vector<Element*> elem;
+
+    for (unsigned int i = 0; i < getJoueur()->listePersonnages().size(); ++i)
+        elem.push_back(getJoueur()->getPersonnage(i));
+
+    for (unsigned int i = 0; i < getJoueur()->listeBatiments().size(); ++i)
+        elem.push_back(getJoueur()->getBatiment(i));
+
+    return elem;
+
+}
 void GameModel::attribuerTacheIA(Joueur * ia)
 {
     Composant * c = NULL;
@@ -152,6 +185,8 @@ void GameModel::attribuerTacheIA(Joueur * ia)
     int taille = ia->listePersonnages().size();
     if (taille > 0)
         p = ia->getPersonnage(rand()%taille);
+
+
 
     if (p != NULL)
     {
@@ -166,9 +201,20 @@ void GameModel::attribuerTacheIA(Joueur * ia)
         {
             if (com->getTypeTache() == "")
             {
-                com->setTypeTache("Patrouille");
-                com->setDestX(ia->searchFoyer()->getPosX() - 500);
-                com->setDestY(ia->searchFoyer()->getPosY() - 500);
+                vector<Element*> elem = vecteurElementJoueur();
+
+                int random = rand()%2;
+                if (random == 0)
+                {
+                    com->setTypeTache("Patrouille");
+                    com->setDestX(ia->searchFoyer()->getPosX() - 500);
+                    com->setDestY(ia->searchFoyer()->getPosY() - 500);
+                }
+                else if (elem.size() != 0)
+                {
+                    com->setTypeTache("Attaque");
+                    com->setTargetPerso(elem[rand()%elem.size()]);
+                }
             }
         }
     }    

@@ -23,6 +23,7 @@ class GameModel {
     AppState _state;
     std::string _level;
     float _temps;
+    bool _collision;
 
     sf::Clock _timer_IA;
 
@@ -34,6 +35,7 @@ class GameModel {
     void eraseMap();
 
     Joueur * getJoueur()const;
+    std::vector<Element*> vecteurElementJoueur()const;
     
     //Gestion IA
     void creerIA(int bois, int nourriture);
@@ -67,6 +69,10 @@ class GameModel {
 
     void setNbIA(int nb);
     int getNbIA()const;
+
+    bool collision()const;
+    void activerCollision(bool a);
+    std::string etatCollision()const;
 };
 
 #endif

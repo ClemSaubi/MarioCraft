@@ -192,11 +192,17 @@ void GameView::dessinSelection(){
     level.SetSize(30);
     level.SetPosition(_window->GetWidth()-230, _window->GetHeight()/2 );    
 
+    String col = String("Collision: " + _model->etatCollision());
+    col.SetFont(*font);
+    col.SetColor(Color::Black);
+    col.SetSize(30);
+    col.SetPosition(_window->GetWidth()/3 + 120, 70);    
 
     _window->Draw(_background_menu_sprite);
 
     _window->Draw(nbIA);
     _window->Draw(level);
+    _window->Draw(col);
 
     if (sourisSurSprite(input.GetMouseX(), input.GetMouseY(), _oui_sprite))
     {
@@ -274,9 +280,28 @@ void GameView::dessinSelection(){
     else
         _levelD_sprite.SetImage(_levelD);
 
+    if (sourisSurSprite(input.GetMouseX(), input.GetMouseY(), _ouiC_sprite))
+    {
+        _ouiC_sprite.SetImage(_ouiC_hov);
+        if (input.IsMouseButtonDown(Mouse::Left))
+            _model->activerCollision(true);
+    }
+    else
+        _ouiC_sprite.SetImage(_ouiC);
+
+    if (sourisSurSprite(input.GetMouseX(), input.GetMouseY(), _nonC_sprite))
+    {
+        _nonC_sprite.SetImage(_nonC_hov);
+        if (input.IsMouseButtonDown(Mouse::Left))
+            _model->activerCollision(false);
+    }
+    else
+        _nonC_sprite.SetImage(_nonC);
 
     _window->Draw(_non_sprite);
     _window->Draw(_oui_sprite);
+    _window->Draw(_nonC_sprite);
+    _window->Draw(_ouiC_sprite);
     _window->Draw(_levelF_sprite);
     _window->Draw(_levelM_sprite);
     _window->Draw(_levelD_sprite);
@@ -481,7 +506,7 @@ void GameView::dessinPersonnagesJoueur(Font font){
             {
                 shape_actif = Shape::Rectangle(pos_x_elem, pos_y_elem,
                                                  pos_x_elem + DIMENSION_SPRITE, pos_y_elem + DIMENSION_SPRITE
-                                                 , Color::White, 4, Color::Red);
+                                                 , Color::White, 4, Color::Blue);
             }
             else
             {
@@ -511,13 +536,19 @@ void GameView::dessinPersonnagesJoueur(Font font){
                 {
                     int x = c->getTargetPerso()->getPosX();
                     int y = c->getTargetPerso()->getPosY();
+                    String life = String(_model->intToString(c->getTargetPerso()->getVieElement()));
+                    life.SetFont(font);
+                    life.SetColor(Color::Black);
+                    life.SetSize(SIZE_TEXT);
+                    life.SetPosition(x + 10, y + DIMENSION_SPRITE);                    
                     shape_cible = Shape::Rectangle(x, y,
                                                      x + DIMENSION_SPRITE, y + DIMENSION_SPRITE
                                                      , Color::White, 4, Color::Red);
+                    shape_cible.EnableFill(false);
+                    _window->Draw(shape_cible);
+                    _window->Draw(life);
                 }
             }
-            shape_cible.EnableFill(false);
-            _window->Draw(shape_cible);
             _combattant_sprite.Resize(DIMENSION_SPRITE, DIMENSION_SPRITE);
             _combattant_sprite.SetPosition(_model->getJoueur()->getPersonnage(i)->getPosX(), _model->getJoueur()->getPersonnage(i)->getPosY());
             _window->Draw(mario());
@@ -566,7 +597,7 @@ void GameView::dessinComposants(Font font){
 
             String _indic_vie = String(_model->intToString(vie));
             _indic_vie.SetFont(font);
-            _indic_vie.SetColor(Color::Yellow);
+            _indic_vie.SetColor(Color::Black);
             _indic_vie.SetSize(SIZE_TEXT);
             _indic_vie.SetPosition(pos_x_elem + 10, pos_y_elem + DIMENSION_SPRITE);
 
@@ -682,6 +713,10 @@ void GameView::chargementImages(){
     or  !_oui_hov.LoadFromFile("../Pictures/oui(2).png")
     or  !_non.LoadFromFile("../Pictures/non.png")
     or  !_non_hov.LoadFromFile("../Pictures/non(2).png")
+    or  !_ouiC.LoadFromFile("../Pictures/oui.png")
+    or  !_ouiC_hov.LoadFromFile("../Pictures/oui(2).png")
+    or  !_nonC.LoadFromFile("../Pictures/non.png")
+    or  !_nonC_hov.LoadFromFile("../Pictures/non(2).png")
     or  !_play.LoadFromFile("../Pictures/parti.png")
     or  !_play_hov.LoadFromFile("../Pictures/parti(2).png")
     or  !_levelF.LoadFromFile("../Pictures/facile.png")
@@ -734,9 +769,17 @@ void GameView::chargementImages(){
         _non_sprite.Resize(LARGEUR_BOUTON, HAUTEUR_BOUTON);
         _non_sprite.SetPosition(100,_window->GetHeight() - 150);
 
+        _ouiC_sprite = Sprite(_ouiC);
+        _ouiC_sprite.Resize(LARGEUR_BOUTON, HAUTEUR_BOUTON);
+        _ouiC_sprite.SetPosition(250,100);
+
+        _nonC_sprite = Sprite(_nonC);
+        _nonC_sprite.Resize(LARGEUR_BOUTON, HAUTEUR_BOUTON);
+        _nonC_sprite.SetPosition(750 ,100);
+
         _play_sprite = Sprite(_play);
         _play_sprite.Resize(LARGEUR_BOUTON, HAUTEUR_BOUTON);
-        _play_sprite.SetPosition(_window->GetWidth()/3, _window->GetHeight()/2 - 20);
+        _play_sprite.SetPosition(_window->GetWidth()/3 + 100, _window->GetHeight()/2 - 20);
 
         _map_sprite = Sprite (_map);
         _map_sprite.Resize(_window->GetWidth()*6, _window->GetHeight()*6);

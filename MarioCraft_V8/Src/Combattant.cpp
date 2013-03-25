@@ -22,14 +22,22 @@ Combattant::~Combattant()
 
 void Combattant::attaquer()
 {
-    _target_perso->perteVie(_degats);
+    if (temps.GetElapsedTime() > 3.f)
+    {
+        if (_target_perso->getVieElement() > 0)
+            _target_perso->perteVie(_degats);
+        else
+            _target_perso = NULL;
+
+        temps.Reset();
+    }
 }
 
-Batiment * Combattant::getTargetPerso()const{
+Element * Combattant::getTargetPerso()const{
 	return _target_perso;
 }
 
-void Combattant::setTargetPerso(Batiment * target){
+void Combattant::setTargetPerso(Element * target){
 	_target_perso = target;
 }
 
@@ -75,8 +83,8 @@ void Combattant::effectuerTache(){
             setDestX(x);
             setDestY(y);
 
-            if (_pos_x <= x + DIMENSION_SPRITE
-            and _pos_y >= y and _pos_y <= y + DIMENSION_SPRITE)
+            if (_pos_x <= _dest_x + 10 and _pos_x >= _dest_x - 10
+            and _pos_y >= _dest_y - 10 and _pos_y <= _dest_y + 10)
                 attaquer();
         }
     }

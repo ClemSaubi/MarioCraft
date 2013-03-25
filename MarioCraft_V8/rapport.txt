@@ -1,0 +1,5 @@
+- diagramme de classe commenté 
+- spec detaillée précisant ce que l'on a code et ce que l'aon aurait aime code 
+- comment jouer
+- comment est implemente l'IA (inclusion de morceaux point h dans le rapport )
+
