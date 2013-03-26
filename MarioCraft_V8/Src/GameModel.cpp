@@ -5,12 +5,12 @@ using namespace std;
 GameModel::GameModel() {
     cout << "GameModel::Constructeur" << endl;
     _nombre_IA = 0;
-    _joueurs.push_back(new Joueur(true, 700, 700));    
+    _joueurs.push_back(new Joueur(true, 70, 70));    
     _compteur_bois = 30;
     _compteur_nourriture = 25;
     _state = MENU;
     _temps = 0.f;
-    _level = "Facile";
+    _level = "Moyen";
     _collision = false;
     _timer_IA.Reset();
 }
@@ -199,7 +199,7 @@ void GameModel::attribuerTacheIA(Joueur * ia)
         }
         else if (com != NULL)
         {
-            if (com->getTypeTache() == "")
+            if (com->getTypeTache() == "" or com->getTargetPerso() == NULL)
             {
                 vector<Element*> elem = vecteurElementJoueur();
 

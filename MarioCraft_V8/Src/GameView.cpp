@@ -380,16 +380,16 @@ void GameView::dessinJeu(){
 
     //Deplacement de la vue
     if (_window->GetInput().IsKeyDown(Key::Z))
-        _vue.Move( 0,-15);
+        _vue.Move( 0,-25);
 
     if (_window->GetInput().IsKeyDown(Key::S))
-        _vue.Move( 0, 15);
+        _vue.Move( 0, 25);
 
     if (_window->GetInput().IsKeyDown(Key::Q))
-        _vue.Move(-15, 0);
+        _vue.Move(-25, 0);
 
     if (_window->GetInput().IsKeyDown(Key::D))
-        _vue.Move( 15, 0);
+        _vue.Move( 25, 0);
 
 
     _window->Draw(_map_sprite);
@@ -438,9 +438,8 @@ void GameView::dessinBatimentsJoueur(Font font) {
             _indic_vie.SetSize(SIZE_TEXT);  
             _indic_vie.SetPosition(pos_x_elem + 10, pos_y_elem + DIMENSION_SPRITE);
 
-            Shape shape_actif = Shape::Rectangle(pos_x_elem, pos_y_elem,
-                                                 pos_x_elem + DIMENSION_SPRITE, pos_y_elem + DIMENSION_SPRITE
-                                                 , Color::White, 4, Color::Black);
+            Shape shape_actif = Shape::Circle(pos_x_elem+(DIMENSION_SPRITE/2), pos_y_elem+(DIMENSION_SPRITE/2),
+                                                 DIMENSION_SPRITE/2, Color::White, 4, Color::Green);
 
             shape_actif.EnableFill(false);
 
@@ -504,15 +503,13 @@ void GameView::dessinPersonnagesJoueur(Font font){
 
             if (_model->getJoueur()->getPersonnage(i)->estEnCollision() == true)
             {
-                shape_actif = Shape::Rectangle(pos_x_elem, pos_y_elem,
-                                                 pos_x_elem + DIMENSION_SPRITE, pos_y_elem + DIMENSION_SPRITE
-                                                 , Color::White, 4, Color::Blue);
+                shape_actif = Shape::Circle(pos_x_elem+(DIMENSION_SPRITE/2), pos_y_elem+(DIMENSION_SPRITE/2),
+                                                DIMENSION_SPRITE/2, Color::White, 4, Color::Blue);
             }
             else
             {
-                shape_actif = Shape::Rectangle(pos_x_elem, pos_y_elem,
-                                                     pos_x_elem + DIMENSION_SPRITE, pos_y_elem + DIMENSION_SPRITE
-                                                     , Color::White, 4, Color::Black);
+                shape_actif = Shape::Circle(pos_x_elem+(DIMENSION_SPRITE/2), pos_y_elem+(DIMENSION_SPRITE/2),
+                                                     DIMENSION_SPRITE/2, Color::White, 4, Color::Green);
             }
 
             shape_actif.EnableFill(false);
@@ -541,9 +538,8 @@ void GameView::dessinPersonnagesJoueur(Font font){
                     life.SetColor(Color::Black);
                     life.SetSize(SIZE_TEXT);
                     life.SetPosition(x + 10, y + DIMENSION_SPRITE);                    
-                    shape_cible = Shape::Rectangle(x, y,
-                                                     x + DIMENSION_SPRITE, y + DIMENSION_SPRITE
-                                                     , Color::White, 4, Color::Red);
+                    shape_cible = Shape::Circle(x+(DIMENSION_SPRITE/2), y+(DIMENSION_SPRITE/2),
+                                                     DIMENSION_SPRITE/2, Color::White, 4, Color::Red);
                     shape_cible.EnableFill(false);
                     _window->Draw(shape_cible);
                     _window->Draw(life);
@@ -591,9 +587,8 @@ void GameView::dessinComposants(Font font){
 
         if (_model->getComposant(i)->estCible() == true)
         {
-            Shape shape_cible = Shape::Rectangle(pos_x_elem, pos_y_elem,
-                                                 pos_x_elem + DIMENSION_SPRITE, pos_y_elem + DIMENSION_SPRITE
-                                                 , Color::White, 4, Color::Yellow);
+            Shape shape_cible = Shape::Circle(pos_x_elem+(DIMENSION_SPRITE/2), pos_y_elem+(DIMENSION_SPRITE/2),
+                                                 DIMENSION_SPRITE/2, Color::White, 4, Color::Yellow);
 
             String _indic_vie = String(_model->intToString(vie));
             _indic_vie.SetFont(font);

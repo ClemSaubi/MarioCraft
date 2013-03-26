@@ -12,6 +12,7 @@ Combattant::Combattant(int pos_x, int pos_y, Batiment * f)
     _dest_x = pos_x;
     _dest_y = pos_y;
     _type_tache = "";
+    temps.Reset();
     _foy = f;
 }
 
@@ -22,7 +23,7 @@ Combattant::~Combattant()
 
 void Combattant::attaquer()
 {
-    if (temps.GetElapsedTime() > 3.f)
+    if (temps.GetElapsedTime() > 0.5)
     {
         if (_target_perso->getVieElement() > 0)
             _target_perso->perteVie(_degats);
@@ -80,6 +81,7 @@ void Combattant::effectuerTache(){
         {
             int x = _target_perso->getPosX() + DIMENSION_SPRITE;
             int y = _target_perso->getPosY();
+
             setDestX(x);
             setDestY(y);
 
